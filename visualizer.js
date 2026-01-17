@@ -93,20 +93,23 @@ class PianoRollVisualizer {
             this.render();
         });
 
-        // 音域范围选择
-        document.getElementById('octave-range').addEventListener('change', (e) => {
-            this.setOctaveRange(e.target.value);
-        });
+        // 音域范围选择（可选元素）
+        const octaveRangeSelect = document.getElementById('octave-range');
+        if (octaveRangeSelect) {
+            octaveRangeSelect.addEventListener('change', (e) => {
+                this.setOctaveRange(e.target.value);
+            });
+        }
 
-        // 文件加载
-        document.getElementById('file-input').addEventListener('change', (e) => {
-            this.loadFile(e.target.files[0]);
-        });
+        // 文件加载 - 注意：这个已经在 scripts.js 中处理，这里不需要重复
+        // document.getElementById('file-input').addEventListener('change', (e) => {
+        //     this.loadFile(e.target.files[0]);
+        // });
 
-        // 示例数据加载
-        document.getElementById('load-sample-btn').addEventListener('click', () => {
-            this.loadSampleData();
-        });
+        // 示例数据加载 - 现在由 scripts.js 处理
+        // document.getElementById('load-sample-btn').addEventListener('click', () => {
+        //     this.loadSampleData();
+        // });
 
         // ========== Phase 2: 播放控制 ==========
 
@@ -163,10 +166,13 @@ class PianoRollVisualizer {
             this.audioEngine.setMasterGain(volume / 100);
         });
 
-        // 延音踏板开关
-        document.getElementById('sustain-pedal-btn').addEventListener('click', () => {
-            this.toggleSustainPedal();
-        });
+        // 延音踏板开关（可选元素）
+        const sustainPedalBtn = document.getElementById('sustain-pedal-btn');
+        if (sustainPedalBtn) {
+            sustainPedalBtn.addEventListener('click', () => {
+                this.toggleSustainPedal();
+            });
+        }
 
         // 鼠标悬停显示音符信息
         this.notesCanvas.addEventListener('mousemove', (e) => {
@@ -258,12 +264,14 @@ class PianoRollVisualizer {
         const isEnabled = this.audioEngine.toggleSustainPedal();
         const pedalBtn = document.getElementById('sustain-pedal-btn');
 
-        if (isEnabled) {
-            pedalBtn.textContent = '🎯 Sustain Pedal: ON';
-            pedalBtn.classList.add('active');
-        } else {
-            pedalBtn.textContent = '🎯 Sustain Pedal: OFF';
-            pedalBtn.classList.remove('active');
+        if (pedalBtn) {
+            if (isEnabled) {
+                pedalBtn.textContent = '🎯 延音踏板: 开启';
+                pedalBtn.classList.add('active');
+            } else {
+                pedalBtn.textContent = '🎯 延音踏板: 关闭';
+                pedalBtn.classList.remove('active');
+            }
         }
 
         console.log(`Sustain pedal ${isEnabled ? 'enabled' : 'disabled'}`);
@@ -935,23 +943,6 @@ class PianoRollVisualizer {
     }
 }
 
-// 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', () => {
-    const visualizer = new PianoRollVisualizer('piano-roll-container');
+// 注意：页面初始化已移至 index.html 中的脚本
+// 这里不再重复初始化，以避免创建多个实例
 
-    // 尝试从 sessionStorage 加载数据
-    const storedData = sessionStorage.getItem('pianoVisionData');
-    if (storedData) {
-        try {
-            const data = JSON.parse(storedData);
-            visualizer.loadData(data);
-            console.log('Loaded data from sessionStorage');
-            // 清除 sessionStorage 以避免占用过多空间
-            sessionStorage.removeItem('pianoVisionData');
-        } catch (error) {
-            console.error('Error loading stored data:', error);
-        }
-    }
-
-    console.log('Piano Fingering Visualizer loaded!');
-});

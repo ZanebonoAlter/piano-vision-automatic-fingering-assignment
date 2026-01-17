@@ -13,6 +13,22 @@ const handSizes = {
     'XXL': 1.15
 };
 
+/**
+ * 镜像转换左手指法
+ * 左手的指法编号需要镜像：1↔5, 2↔4, 3保持不变
+ * 因为左手和右手在钢琴上的位置是相反的
+ */
+function mirrorLeftHandFinger(finger) {
+    const mirrorMap = {
+        1: 5,
+        2: 4,
+        3: 3,
+        4: 2,
+        5: 1
+    };
+    return mirrorMap[finger] || finger;
+}
+
 class Note {
     constructor(data) {
         // Extract necessary properties from the note data
@@ -187,8 +203,12 @@ function keyPosition(midiNote) {
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
 const downloadLink = document.getElementById('download-link');
-const outputDiv = document.getElementById('output');
+const outputDiv = document.getElementById('output'); // 可能为 null
 const handSizeSelect = document.getElementById('hand-size-select');
+
+// 保存原始数据和文件名
+let originalData = null;
+let originalFileName = null;
 
 // Handle drag over
 dropZone.addEventListener('dragover', (e) => {
@@ -214,8 +234,16 @@ dropZone.addEventListener('drop', (e) => {
 });
 
 // Handle click to open file dialog
-dropZone.addEventListener('click', () => {
-    fileInput.click();
+dropZone.addEventListener('click', (e) => {
+    // 如果点击的是 fileInput 本身，不需要再次触发
+    if (e.target !== fileInput) {
+        fileInput.click();
+    }
+});
+
+// 阻止 fileInput 的点击事件冒泡到 dropZone
+fileInput.addEventListener('click', (e) => {
+    e.stopPropagation();
 });
 
 // Handle file selection
@@ -228,29 +256,127 @@ fileInput.addEventListener('change', () => {
     }
 });
 
+// Handle process button click (分配指法)
+const processBtn = document.getElementById('process-btn');
+if (processBtn) {
+    processBtn.addEventListener('click', assignFingering);
+}
+
+// Handle load sample data button
+const loadSampleBtn = document.getElementById('load-sample-btn');
+if (loadSampleBtn) {
+    loadSampleBtn.addEventListener('click', loadSampleData);
+}
+
+/**
+ * 加载示例数据（Piano Vision 格式，不带指法）
+ */
+function loadSampleData() {
+    // 生成示例数据（Piano Vision 格式）
+    const sampleData = {
+        tracksV2: {
+            right: [{
+                notes: [
+                    { note: 60, start: 0, duration: 0.5, noteName: 'C4' },
+                    { note: 62, start: 0.5, duration: 0.5, noteName: 'D4' },
+                    { note: 64, start: 1.0, duration: 0.5, noteName: 'E4' },
+                    { note: 65, start: 1.5, duration: 0.5, noteName: 'F4' },
+                    { note: 67, start: 2.0, duration: 0.5, noteName: 'G4' },
+                    { note: 66, start: 2.5, duration: 0.5, noteName: 'F#4' },
+                    { note: 65, start: 3.0, duration: 0.5, noteName: 'F4' },
+                    { note: 64, start: 3.5, duration: 0.5, noteName: 'E4' },
+                    { note: 62, start: 4.0, duration: 0.5, noteName: 'D4' },
+                    { note: 61, start: 4.5, duration: 0.5, noteName: 'C#4' },
+                    { note: 60, start: 5.0, duration: 0.5, noteName: 'C4' },
+                    { note: 62, start: 5.5, duration: 0.5, noteName: 'D4' },
+                    { note: 64, start: 6.0, duration: 0.5, noteName: 'E4' },
+                    { note: 66, start: 6.5, duration: 0.5, noteName: 'F#4' },
+                    { note: 68, start: 7.0, duration: 0.5, noteName: 'G#4' },
+                    { note: 69, start: 7.5, duration: 0.5, noteName: 'A4' },
+                    { note: 71, start: 8.0, duration: 0.0, noteName: 'B4' },
+                    { note: 72, start: 8.0, duration: 1.0, noteName: 'C5' }
+                ]
+            }],
+            left: [{
+                notes: [
+                    { note: 48, start: 0, duration: 1.0, noteName: 'C3' },
+                    { note: 50, start: 1.0, duration: 1.0, noteName: 'D3' },
+                    { note: 52, start: 2.0, duration: 1.0, noteName: 'E3' },
+                    { note: 53, start: 3.0, duration: 1.0, noteName: 'F3' },
+                    { note: 55, start: 4.0, duration: 1.0, noteName: 'G3' },
+                    { note: 54, start: 5.0, duration: 1.0, noteName: 'F#3' },
+                    { note: 53, start: 6.0, duration: 1.0, noteName: 'F3' },
+                    { note: 52, start: 7.0, duration: 1.0, noteName: 'E3' },
+                    { note: 50, start: 8.0, duration: 1.0, noteName: 'D3' },
+                    { note: 49, start: 9.0, duration: 1.0, noteName: 'C#3' },
+                    { note: 48, start: 10.0, duration: 2.0, noteName: 'C3' }
+                ]
+            }]
+        }
+    };
+
+    // 保存原始数据和文件名
+    originalData = JSON.parse(JSON.stringify(sampleData)); // 深拷贝
+    originalFileName = 'sample_data.json';
+
+    // 验证数据格式
+    if (!sampleData.tracksV2 || typeof sampleData.tracksV2 !== 'object') {
+        alert('示例数据格式错误。');
+        return;
+    }
+
+    // 只加载原始数据到可视化器，不分配指法
+    loadDataToVisualizer(sampleData);
+
+    // 启用分配指法按钮
+    if (processBtn) {
+        processBtn.disabled = false;
+    }
+
+    // 隐藏下载区域（直到分配指法后才显示）
+    const downloadSection = document.getElementById('download-section');
+    if (downloadSection) {
+        downloadSection.style.display = 'none';
+    }
+
+    console.log('Sample data loaded successfully. Ready for fingering assignment.');
+}
+
 function processFile(file) {
     const reader = new FileReader();
 
     reader.onload = (e) => {
         try {
             const data = JSON.parse(e.target.result);
-            const handSize = handSizeSelect.value;
-            const updatedData = processJSON(data, handSize);
+            
+            // 保存原始数据和文件名
+            originalData = JSON.parse(JSON.stringify(data)); // 深拷贝
+            originalFileName = file.name;
 
-            // Display updated JSON in output div (optional)
-            outputDiv.textContent = JSON.stringify(updatedData, null, 2);
+            // 验证数据格式
+            if (!data.tracksV2 || typeof data.tracksV2 !== 'object') {
+                alert('JSON 文件中未找到有效的 tracksV2 数据。');
+                return;
+            }
 
-            // Create a Blob from the JSON data and set up download link
-            const blob = new Blob([JSON.stringify(updatedData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            downloadLink.href = url;
-            downloadLink.download = file.name.replace('.json', '_updated.json');
-            downloadLink.style.display = 'inline';
+            // 只加载原始数据到可视化器，不分配指法
+            loadDataToVisualizer(data);
 
-            // 新增：提供可视化预览链接
-            showVisualizeLink(updatedData);
+            // 启用分配指法按钮
+            const processBtn = document.getElementById('process-btn');
+            if (processBtn) {
+                processBtn.disabled = false;
+            }
+
+            // 隐藏下载区域（直到分配指法后才显示）
+            const downloadSection = document.getElementById('download-section');
+            if (downloadSection) {
+                downloadSection.style.display = 'none';
+            }
+
+            console.log('File loaded successfully. Ready for fingering assignment.');
         } catch (error) {
-            alert('Error processing JSON file: ' + error.message);
+            alert('读取 JSON 文件时出错: ' + error.message);
         }
     };
 
@@ -258,33 +384,77 @@ function processFile(file) {
 }
 
 /**
- * 显示可视化预览链接
+ * 加载数据到可视化器
  */
-function showVisualizeLink(data) {
-    // 移除旧的可视化链接（如果存在）
-    const oldLink = document.getElementById('visualize-link');
-    if (oldLink) oldLink.remove();
+function loadDataToVisualizer(data) {
+    // 检查可视化器是否存在
+    if (typeof visualizer !== 'undefined' && visualizer) {
+        try {
+            visualizer.loadData(data);
+            console.log('Data loaded into visualizer successfully');
 
-    // 将数据保存到 sessionStorage
-    sessionStorage.setItem('pianoVisionData', JSON.stringify(data));
+            // 启用播放按钮
+            const playBtn = document.getElementById('play-btn');
+            const pauseBtn = document.getElementById('pause-btn');
+            const stopBtn = document.getElementById('stop-btn');
 
-    // 创建可视化链接
-    const visualizeLink = document.createElement('a');
-    visualizeLink.id = 'visualize-link';
-    visualizeLink.href = 'visualizer.html';
-    visualizeLink.textContent = '📊 Open Visualizer';
-    visualizeLink.style.cssText = `
-        display: inline-block;
-        margin-left: 15px;
-        padding: 10px 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: bold;
-    `;
+            if (playBtn) playBtn.disabled = false;
+            if (pauseBtn) pauseBtn.disabled = false;
+            if (stopBtn) stopBtn.disabled = false;
+        } catch (error) {
+            console.error('Error loading data into visualizer:', error);
+            alert('加载数据到可视化器时出错: ' + error.message);
+        }
+    } else {
+        console.warn('Visualizer not initialized. Data saved to sessionStorage.');
+        // 将数据保存到 sessionStorage 以备后用
+        sessionStorage.setItem('pianoVisionData', JSON.stringify(data));
+    }
+}
 
-    downloadLink.parentNode.insertBefore(visualizeLink, downloadLink.nextSibling);
+/**
+ * 分配指法并更新可视化
+ */
+function assignFingering() {
+    if (!originalData) {
+        alert('请先上传 JSON 文件。');
+        return;
+    }
+
+    try {
+        // 深拷贝原始数据
+        const data = JSON.parse(JSON.stringify(originalData));
+        const handSize = handSizeSelect.value;
+        
+        // 分配指法
+        const updatedData = processJSON(data, handSize);
+
+        // 更新可视化器
+        loadDataToVisualizer(updatedData);
+
+        // 创建下载链接
+        const blob = new Blob([JSON.stringify(updatedData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        downloadLink.href = url;
+        downloadLink.download = originalFileName.replace('.json', '_updated.json');
+        downloadLink.style.display = 'inline';
+
+        // 显示下载区域
+        const downloadSection = document.getElementById('download-section');
+        if (downloadSection) {
+            downloadSection.style.display = 'block';
+        }
+
+        // Display updated JSON in output div (optional) - 如果元素存在
+        if (outputDiv) {
+            outputDiv.textContent = JSON.stringify(updatedData, null, 2);
+        }
+
+        console.log('Fingering assigned successfully.');
+    } catch (error) {
+        alert('分配指法时出错: ' + error.message);
+        console.error('Error assigning fingering:', error);
+    }
 }
 
 function processJSON(data, handSize) {
@@ -319,7 +489,14 @@ function processJSON(data, handSize) {
                 if (Array.isArray(block.notes)) {
                     block.notes.forEach((noteData) => {
                         if (allNotes[noteIndex]) {
-                            noteData.finger = allNotes[noteIndex].fingering;
+                            let finger = allNotes[noteIndex].fingering;
+
+                            // 左手镜像转换指法：1↔5, 2↔4, 3保持不变
+                            if (hand === 'left') {
+                                finger = mirrorLeftHandFinger(finger);
+                            }
+
+                            noteData.finger = finger;
                         }
                         noteIndex++;
                     });

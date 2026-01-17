@@ -1,102 +1,411 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>Piano Vision 指法分配工具</title>
-<link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Vision 指法分配工具</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="8" width="36" height="24" rx="3" fill="white" stroke="currentColor" stroke-width="2"/>
+                    <line x1="10" y1="8" x2="10" y2="32" stroke="#667eea" stroke-width="2"/>
+                    <line x1="18" y1="8" x2="18" y2="32" stroke="#667eea" stroke-width="2"/>
+                    <line x1="26" y1="8" x2="26" y2="32" stroke="#667eea" stroke-width="2"/>
+                    <line x1="34" y1="8" x2="34" y2="32" stroke="#667eea" stroke-width="2"/>
+                </svg>
+                <span class="logo-text">Piano Vision Fingering</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">功能特性</a>
+                <a href="#how-it-works" class="nav-link">使用方法</a>
+                <a href="https://github.com/ZanebonoAlter/piano-vision-automatic-fingering-assignment" target="_blank" class="nav-link">GitHub</a>
+            </div>
+        </div>
+    </nav>
 
-<h1>Piano Vision 指法分配工具</h1>
-<p>将 Piano Vision JSON 文件拖放到下方区域，或点击选择文件。</p>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">智能钢琴指法分配工具</h1>
+            <p class="hero-subtitle">
+                为 Piano Vision 用户提供专业的指法分配服务，支持自定义手型，智能优化演奏体验
+            </p>
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="scrollToVisualizer()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2L3 10H7V18H13V10H17L10 2Z" fill="currentColor"/>
+                    </svg>
+                    开始使用
+                </button>
+                <a href="https://www.pianovision.com/" target="_blank" class="btn-secondary">
+                    了解 Piano Vision
+                </a>
+            </div>
+        </div>
+    </section>
 
-<div class="hand-size-selection">
-    <label>选择手的大小：</label>
-    <select id="hand-size-select">
-        <option value="XXS">XXS</option>
-        <option value="XS">XS</option>
-        <option value="S">S</option>
-        <option value="M" selected>M</option>
-        <option value="L">L</option>
-        <option value="XL">XL</option>
-        <option value="XXL">XXL</option>
-    </select>
-</div>
+    <!-- 可视化器 Section -->
+    <section id="visualizer-section" class="visualizer-section">
+        <div class="section-header">
+            <h2 class="section-title">指法分配与可视化</h2>
+            <p class="section-description">上传您的 Piano Vision JSON 文件，先可视化预览内容，然后根据需要分配指法</p>
+        </div>
 
-<div id="drop-zone">将 Piano Vision JSON 文件拖放到此处，或点击选择</div>
-<input type="file" id="file-input" accept=".json">
+        <div class="main-container">
+            <!-- 左侧控制面板 -->
+            <div class="control-panel">
+                <h3>控制面板</h3>
 
-<a id="download-link" href="#" download="updated_songs.json">下载更新后的 JSON 文件</a>
+                <!-- 文件上传 -->
+                <div class="control-group">
+                    <label>上传文件</label>
+                    <div class="file-upload-area" id="drop-zone">
+                        <input type="file" id="file-input" accept=".json">
+                        <div class="file-upload-icon">📁</div>
+                        <p class="file-upload-text">拖放文件到此处或点击选择</p>
+                        <p class="file-upload-hint">支持 Piano Vision JSON 格式</p>
+                    </div>
+                </div>
 
-<div id="output"></div>
+                <!-- 手型选择 -->
+                <div class="control-group">
+                    <label for="hand-size-select">手型大小</label>
+                    <select id="hand-size-select">
+                        <option value="XXS">XXS - 特小</option>
+                        <option value="XS">XS - 很小</option>
+                        <option value="S">S - 小号</option>
+                        <option value="M" selected>M - 中号</option>
+                        <option value="L">L - 大号</option>
+                        <option value="XL">XL - 很大</option>
+                        <option value="XXL">XXL - 特大</option>
+                    </select>
+                </div>
 
-<br/><br/>
+                <!-- 处理按钮 -->
+                <div class="control-group">
+                    <button id="process-btn" class="btn-process" disabled>
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M9 2L2 9H6V16H12V9H16L9 2Z" fill="currentColor"/>
+                        </svg>
+                        分配指法
+                    </button>
+                </div>
 
-<div class="container">
+                <!-- 下载链接 -->
+                <div id="download-section" class="control-group" style="display: none;">
+                    <label>下载结果</label>
+                    <a id="download-link" href="#" class="btn-download" download="updated_songs.json">
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M9 12L5 8H7.5V3H10.5V8H13L9 12ZM4 13V15H14V13H4Z" fill="currentColor"/>
+                        </svg>
+                        下载更新后的文件
+                    </a>
+                </div>
 
-    <p class="intro">
-        这个基于网页的工具旨在帮助钢琴家、音乐学生和爱好者通过为音乐作品分配高效指法来优化钢琴演奏。即使您不熟悉 <a href="https://www.pianovision.com/">Piano Vision</a>，这个工具也能通过基于先进算法的个性化指法建议来提升您的练习和表演效果。
-    </p>
+                <!-- 示例数据按钮 -->
+                <div class="control-group">
+                    <button id="load-sample-btn" class="btn-secondary-small">
+                        加载示例数据
+                    </button>
+                </div>
 
-    <h2>关于 Piano Vision</h2>
-    <p>
-        该工具专门用于处理来自 <a href="https://www.pianovision.com/"><strong>Piano Vision</strong></a> 的 JSON 文件，这是一款适用于 Meta Quest 的虚拟现实应用程序，提供沉浸式的钢琴学习体验。
-    </p>
+                <!-- 播放控制 -->
+                <div class="control-group">
+                    <label>播放控制</label>
+                    <div class="playback-buttons">
+                        <button id="play-btn" class="playback-btn" disabled>▶</button>
+                        <button id="pause-btn" class="playback-btn" disabled>⏸</button>
+                        <button id="stop-btn" class="playback-btn" disabled>⏹</button>
+                    </div>
+                    <div class="speed-control">
+                        <label>速度</label>
+                        <select id="playback-speed">
+                            <option value="0.25">0.25x</option>
+                            <option value="0.5">0.5x</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1" selected>1.0x</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2">2.0x</option>
+                        </select>
+                    </div>
+                </div>
 
-    <img src="screenshot.jpg" width="100%" alt="" loading="lazy" />
+                <!-- 进度控制 -->
+                <div class="control-group">
+                    <label>进度</label>
+                    <div class="time-display">
+                        <span id="current-time-display">0.00</span>s / <span id="total-time-display">0.00</span>s
+                    </div>
+                    <input type="range" id="progress-slider" min="0" max="100" value="0" step="0.1">
+                </div>
 
-    <h2>工具功能</h2>
-    <p>
-        钢琴指法分配工具分析钢琴作品中的音符，并为每个音符分配最佳指法。它考虑了手的大小、手指力量和钢琴键盘的物理布局等因素，推荐能够实现以下目标的指法：
-    </p>
-    <ul>
-        <li><strong>最小化手部移动</strong>：减少不必要的移动和伸展。</li>
-        <li><strong>提升演奏舒适度</strong>：适应您的具体手型，提供自然的手感。</li>
-        <li><strong>提高技术效率</strong>：实现音符和和弦之间更流畅的过渡。</li>
-    </ul>
+                <!-- 音频控制 -->
+                <div class="control-group">
+                    <label>音频设置</label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="enable-audio">
+                        <span>启用声音</span>
+                    </label>
+                    <div class="volume-control">
+                        <label>音量</label>
+                        <input type="range" id="volume-slider" min="0" max="100" value="30">
+                    </div>
+                    <button id="sustain-pedal-btn" class="pedal-button" style="margin-top: 12px;">
+                        🎯 延音踏板: 关闭
+                    </button>
+                </div>
 
-    <h2>主要功能</h2>
-    <ul>
-        <li><strong>先进的指法算法</strong>：采用受专业钢琴家启发的复杂技术来确定最高效的指法。</li>
-        <li><strong>手型自定义</strong>：提供从特小号（XXS）到特大号（XXL）的手型选项，以满足您的个人需求。</li>
-        <li><strong>易于使用的界面</strong>：简单的拖放功能，用于上传音乐文件并下载包含指法的更新版本。</li>
-        <li><strong>无需安装</strong>：完全在您的网页浏览器中运行，无需额外软件。</li>
-    </ul>
+                <!-- 显示选项 -->
+                <div class="control-group">
+                    <label>显示选项</label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-left-hand" checked>
+                        <span class="hand-indicator left-hand"></span>
+                        左手
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-right-hand" checked>
+                        <span class="hand-indicator right-hand"></span>
+                        右手
+                    </label>
+                </div>
 
-    <h2>使用方法</h2>
-    <ol>
-        <li><strong>上传您的音乐文件</strong>：将您的钢琴作品（JSON 格式）拖放到工具中。</li>
-        <li><strong>选择您的手型</strong>：从 XXS 到 XXL 中选择，确保指法对您来说舒适。</li>
-        <li><strong>处理文件</strong>：工具使用先进算法分析作品。</li>
-        <li><strong>下载更新后的文件</strong>：取回已为每个音符添加推荐指法的音乐文件。</li>
-        <li><strong>自信练习</strong>：使用带有指法的音乐更有效地练习，专注于技巧和表达。</li>
-    </ol>
+                <!-- 缩放控制 -->
+                <div class="control-group">
+                    <label for="zoom-slider">缩放</label>
+                    <input type="range" id="zoom-slider" min="50" max="300" value="100">
+                    <div class="zoom-value"><span id="zoom-value">100</span>%</div>
+                </div>
 
-    <h2>谁可以受益？</h2>
-    <ul>
-        <li><strong>各水平的钢琴演奏者</strong>：从学习正确技巧的初学者到提升技能的高级演奏者。</li>
-        <li><strong>音乐教育者</strong>：为学生提供适合他们手型和技术能力的指法。</li>
-        <li><strong>自学者</strong>：通过使用专业指法建议来提升练习效果。</li>
-    </ul>
+                <!-- 图例 -->
+                <div class="legend">
+                    <h4>图例</h4>
+                    <div class="legend-item">
+                        <span class="legend-color right-hand"></span>
+                        右手
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color left-hand"></span>
+                        左手
+                    </div>
+                    <div class="legend-item">
+                        <span class="finger-badge">1-5</span>
+                        指法编号
+                    </div>
+                </div>
+            </div>
 
-    <h2>为什么正确指法很重要</h2>
-    <p>
-        在演奏钢琴时使用正确的手指至关重要，原因如下：
-    </p>
-    <ul>
-        <li><strong>技术熟练度</strong>：正确的指法可以实现更流畅的过渡和更准确的演奏。</li>
-        <li><strong>舒适度和人体工程学</strong>：通过促进自然的手部动作，减少劳损和受伤风险。</li>
-        <li><strong>音乐表达</strong>：更好地控制力度和发音，实现更具表现力的演奏。</li>
-    </ul>
+            <!-- 右侧可视化区域 -->
+            <div class="visualizer-area">
+                <!-- 钢琴卷帘窗 -->
+                <div id="piano-roll-container">
+                    <canvas id="keyboard-canvas"></canvas>
+                    <canvas id="notes-canvas"></canvas>
+                    <canvas id="overlay-canvas"></canvas>
+                </div>
 
-    <hr/>
+                <!-- 信息面板 -->
+                <div class="info-panel">
+                    <div class="info-item">
+                        <span class="info-label">总音符数</span>
+                        <span id="total-notes">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">时长</span>
+                        <span id="total-duration">0.0s</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">音高范围</span>
+                        <span id="pitch-range">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">已分配指法</span>
+                        <span id="assigned-fingerings">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <p>
-        源代码在 <a href="https://github.com/tiefenb/piano-vision-automatic-fingering-assignment">Github</a> 上 | 基于 <a href="https://github.com/marcomusy/pianoplayer">github.com/marcomusy/pianoplayer</a>
-    </p>
-</div>
+    <!-- 功能特性 Section -->
+    <section id="features" class="features-section">
+        <div class="section-header">
+            <h2 class="section-title">功能特性</h2>
+            <p class="section-description">专为钢琴学习者和演奏者设计的强大工具</p>
+        </div>
 
-<script src="scripts.js" async></script>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>智能指法分配</h3>
+                <p>采用先进算法分析音符，自动分配最优指法，考虑手型、手指力量和键盘布局等因素</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📏</div>
+                <h3>自定义手型</h3>
+                <p>提供从 XXS 到 XXL 共 7 种手型选项，确保指法方案适合您的个人需求</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎹</div>
+                <h3>实时可视化</h3>
+                <p>钢琴卷帘窗视图清晰展示音符和指法，支持播放、调速和手部分离显示</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>快速高效</h3>
+                <p>完全在浏览器中运行，无需安装额外软件，处理速度快，操作简单便捷</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎵</div>
+                <h3>音频播放</h3>
+                <p>内置音频引擎，支持实时播放钢琴声音，可调节音量和播放速度</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💾</div>
+                <h3>一键导出</h3>
+                <p>处理完成后可直接下载带有指法标注的 JSON 文件，导入 Piano Vision 使用</p>
+            </div>
+        </div>
+    </section>
 
+    <!-- 使用方法 Section -->
+    <section id="how-it-works" class="how-it-works-section">
+        <div class="section-header">
+            <h2 class="section-title">使用方法</h2>
+            <p class="section-description">简单四步，轻松获得专业指法</p>
+        </div>
+
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <h3>上传文件</h3>
+                <p>将您的 Piano Vision JSON 文件拖放到上传区域，或点击选择文件</p>
+            </div>
+            <div class="step-divider">→</div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <h3>预览内容</h3>
+                <p>上传后，系统会自动在可视化区域展示您的音乐内容，您可以先预览</p>
+            </div>
+            <div class="step-divider">→</div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <h3>分配指法</h3>
+                <p>选择手型大小，然后点击"分配指法"按钮，系统将自动处理并更新可视化</p>
+            </div>
+            <div class="step-divider">→</div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <h3>下载使用</h3>
+                <p>预览满意后，下载更新后的文件并在 Piano Vision 中使用</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于 Piano Vision Section -->
+    <section class="about-section">
+        <div class="about-content">
+            <div class="about-text">
+                <h2 class="section-title">关于 Piano Vision</h2>
+                <p>
+                    本工具专为处理来自 <a href="https://www.pianovision.com/" target="_blank"><strong>Piano Vision</strong></a> 的 JSON 文件而设计。
+                    Piano Vision 是一款适用于 Meta Quest 的虚拟现实钢琴学习应用，提供沉浸式的学习体验。
+                </p>
+                <p>
+                    通过将此工具与 Piano Vision 结合使用，您可以：
+                </p>
+                <ul>
+                    <li>获得个性化的指法建议，提升练习效率</li>
+                    <li>减少手部疲劳，避免不自然的伸展</li>
+                    <li>实现更流畅的音符过渡和和弦转换</li>
+                    <li>专注于音乐表达，而非技术细节</li>
+                </ul>
+                <div class="about-links">
+                    <a href="https://www.pianovision.com/" target="_blank" class="btn-secondary">
+                        访问 Piano Vision
+                    </a>
+                    <a href="https://github.com/tiefenb/piano-vision-automatic-fingering-assignment" target="_blank" class="btn-github">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 0C4.477 0 0 4.477 0 10c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02a9.68 9.68 0 012.5-.34c.85.01 1.7.11 2.5.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C17.14 18.16 20 14.42 20 10c0-5.523-4.477-10-10-10z"/>
+                        </svg>
+                        GitHub 仓库
+                    </a>
+                </div>
+            </div>
+            <div class="about-image">
+                <img src="screenshot.jpg" alt="Piano Vision Screenshot" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>
+                源代码在 <a href="https://github.com/tiefenb/piano-vision-automatic-fingering-assignment" target="_blank">GitHub</a> 上开源 |
+                基于 <a href="https://github.com/marcomusy/pianoplayer" target="_blank">pianoplayer</a> 项目
+            </p>
+            <p class="footer-note">本工具非 Piano Vision 官方产品，是一个独立的开源项目</p>
+        </div>
+    </footer>
+
+    <!-- 工具提示 -->
+    <div id="tooltip" class="tooltip"></div>
+
+    <!-- 脚本 -->
+    <script src="audio-engine.js"></script>
+    <script src="visualizer.js"></script>
+    <script src="scripts.js"></script>
+
+    <script>
+        // 全局可视化器实例
+        let visualizer;
+
+        // 页面加载完成后初始化可视化器
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                visualizer = new PianoRollVisualizer('piano-roll-container');
+                console.log('Visualizer initialized successfully');
+
+                // 尝试从 sessionStorage 加载数据
+                const storedData = sessionStorage.getItem('pianoVisionData');
+                if (storedData) {
+                    try {
+                        const data = JSON.parse(storedData);
+                        visualizer.loadData(data);
+                        console.log('Loaded data from sessionStorage');
+
+                        // 启用播放按钮
+                        const playBtn = document.getElementById('play-btn');
+                        const pauseBtn = document.getElementById('pause-btn');
+                        const stopBtn = document.getElementById('stop-btn');
+                        const processBtn = document.getElementById('process-btn');
+
+                        if (playBtn) playBtn.disabled = false;
+                        if (pauseBtn) pauseBtn.disabled = false;
+                        if (stopBtn) stopBtn.disabled = false;
+                        if (processBtn) processBtn.disabled = false;
+
+                        // 清除 sessionStorage 以避免占用过多空间
+                        sessionStorage.removeItem('pianoVisionData');
+                    } catch (error) {
+                        console.error('Error loading stored data:', error);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to initialize visualizer:', error);
+            }
+        });
+
+        function scrollToVisualizer() {
+            document.getElementById('visualizer-section').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
