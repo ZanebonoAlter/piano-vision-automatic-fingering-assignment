@@ -22,4 +22,4 @@
 
 ### 安装
 
-无需安装。只需下载 HTML 文件并在 Web 浏览器中打开即可。visualizer.html为可视化网页，index.html为转换网页
+无需安装。只需下载 HTML 文件并在 Web 浏览器中打开即可。（index.html）
