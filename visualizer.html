@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Vision Fingering Visualizer</title>
+    <link rel="stylesheet" href="visualizer.css">
+</head>
+<body>
+    <div class="header">
+        <h1>🎹 Piano Fingering Visualizer</h1>
+        <p>Piano Roll View with Assigned Fingerings</p>
+    </div>
+
+    <div class="main-container">
+        <!-- 控制面板 -->
+        <div class="control-panel">
+            <h2>Controls</h2>
+
+            <!-- 播放控制 -->
+            <div class="control-group">
+                <label>Playback Controls:</label>
+                <div class="playback-buttons">
+                    <button id="play-btn" class="playback-btn">▶ Play</button>
+                    <button id="pause-btn" class="playback-btn">⏸ Pause</button>
+                    <button id="stop-btn" class="playback-btn">⏹ Stop</button>
+                </div>
+                <div class="speed-control">
+                    <label>Speed:</label>
+                    <select id="playback-speed">
+                        <option value="0.25">0.25x</option>
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1.0x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2.0x</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 进度条 -->
+            <div class="control-group">
+                <label>Progress:</label>
+                <div class="time-display">
+                    <span id="current-time-display">0.00</span>s / <span id="total-time-display">0.00</span>s
+                </div>
+                <input type="range" id="progress-slider" min="0" max="100" value="0" step="0.1">
+            </div>
+
+            <!-- 音频控制 -->
+            <div class="control-group">
+                <label>Audio:</label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="enable-audio">
+                    <span>🔊 Enable Sound</span>
+                </label>
+                <div class="volume-control" style="margin-top: 8px;">
+                    <label>Volume:</label>
+                    <input type="range" id="volume-slider" min="0" max="100" value="30" style="width: 100%;">
+                </div>
+                <button id="sustain-pedal-btn" class="pedal-button" style="margin-top: 8px;">
+                    🎯 Sustain Pedal: OFF
+                </button>
+            </div>
+
+            <div class="control-group">
+                <label>Load JSON File:</label>
+                <input type="file" id="file-input" accept=".json">
+                <button id="load-sample-btn">Load Sample Data</button>
+            </div>
+
+            <div class="control-group">
+                <label>Hand Display:</label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="show-left-hand" checked>
+                    <span class="hand-indicator left-hand"></span>
+                    Left Hand
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="show-right-hand" checked>
+                    <span class="hand-indicator right-hand"></span>
+                    Right Hand
+                </label>
+            </div>
+
+            <div class="control-group">
+                <label>Key Range:</label>
+                <select id="octave-range">
+                    <option value="full">Full (88 keys)</option>
+                    <option value="treble">Treble (C4-B5)</option>
+                    <option value="bass">Bass (A2-C4)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Zoom:</label>
+                <input type="range" id="zoom-slider" min="50" max="300" value="100">
+                <span id="zoom-value">100%</span>
+            </div>
+
+            <div class="legend">
+                <h3>Legend</h3>
+                <div class="legend-item">
+                    <span class="legend-color right-hand"></span>
+                    Right Hand
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color left-hand"></span>
+                    Left Hand
+                </div>
+                <div class="legend-item">
+                    <span class="finger-badge">1-5</span>
+                    Finger number on note
+                </div>
+            </div>
+        </div>
+
+        <!-- 钢琴卷帘窗容器 -->
+        <div class="piano-roll-wrapper">
+            <div id="piano-roll-container">
+                <!-- 键盘Canvas -->
+                <canvas id="keyboard-canvas"></canvas>
+                <!-- 音符Canvas -->
+                <canvas id="notes-canvas"></canvas>
+                <!-- 播放线覆盖层Canvas -->
+                <canvas id="overlay-canvas"></canvas>
+            </div>
+
+            <!-- 信息面板 -->
+            <div class="info-panel">
+                <div class="info-item">
+                    <span class="info-label">Total Notes:</span>
+                    <span id="total-notes">0</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Duration:</span>
+                    <span id="total-duration">0.0s</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Pitch Range:</span>
+                    <span id="pitch-range">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Assigned Fingerings:</span>
+                    <span id="assigned-fingerings">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 工具提示 -->
+    <div id="tooltip" class="tooltip"></div>
+
+    <!-- 脚本 -->
+    <script src="audio-engine.js"></script>
+    <script src="visualizer.js"></script>
+</body>
+</html>

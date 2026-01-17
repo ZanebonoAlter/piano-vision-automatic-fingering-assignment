@@ -246,12 +246,45 @@ function processFile(file) {
             downloadLink.href = url;
             downloadLink.download = file.name.replace('.json', '_updated.json');
             downloadLink.style.display = 'inline';
+
+            // 新增：提供可视化预览链接
+            showVisualizeLink(updatedData);
         } catch (error) {
             alert('Error processing JSON file: ' + error.message);
         }
     };
 
     reader.readAsText(file);
+}
+
+/**
+ * 显示可视化预览链接
+ */
+function showVisualizeLink(data) {
+    // 移除旧的可视化链接（如果存在）
+    const oldLink = document.getElementById('visualize-link');
+    if (oldLink) oldLink.remove();
+
+    // 将数据保存到 sessionStorage
+    sessionStorage.setItem('pianoVisionData', JSON.stringify(data));
+
+    // 创建可视化链接
+    const visualizeLink = document.createElement('a');
+    visualizeLink.id = 'visualize-link';
+    visualizeLink.href = 'visualizer.html';
+    visualizeLink.textContent = '📊 Open Visualizer';
+    visualizeLink.style.cssText = `
+        display: inline-block;
+        margin-left: 15px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+    `;
+
+    downloadLink.parentNode.insertBefore(visualizeLink, downloadLink.nextSibling);
 }
 
 function processJSON(data, handSize) {
