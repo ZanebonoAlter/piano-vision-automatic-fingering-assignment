@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piano Vision Fingering Visualizer</title>
+    <title>钢琴指法可视化器</title>
     <link rel="stylesheet" href="visualizer.css">
 </head>
 <body>
     <div class="header">
-        <h1>🎹 Piano Fingering Visualizer</h1>
-        <p>Piano Roll View with Assigned Fingerings</p>
+        <h1>🎹 钢琴指法可视化器</h1>
+        <p>带指法标注的钢琴卷帘窗视图</p>
     </div>
 
     <div class="main-container">
         <!-- 控制面板 -->
         <div class="control-panel">
-            <h2>Controls</h2>
+            <h2>控制面板</h2>
 
             <!-- 播放控制 -->
             <div class="control-group">
-                <label>Playback Controls:</label>
+                <label>播放控制:</label>
                 <div class="playback-buttons">
-                    <button id="play-btn" class="playback-btn">▶ Play</button>
-                    <button id="pause-btn" class="playback-btn">⏸ Pause</button>
-                    <button id="stop-btn" class="playback-btn">⏹ Stop</button>
+                    <button id="play-btn" class="playback-btn">▶ 播放</button>
+                    <button id="pause-btn" class="playback-btn">⏸ 暂停</button>
+                    <button id="stop-btn" class="playback-btn">⏹ 停止</button>
                 </div>
                 <div class="speed-control">
-                    <label>Speed:</label>
+                    <label>速度:</label>
                     <select id="playback-speed">
                         <option value="0.25">0.25x</option>
                         <option value="0.5">0.5x</option>
@@ -41,7 +41,7 @@
 
             <!-- 进度条 -->
             <div class="control-group">
-                <label>Progress:</label>
+                <label>进度:</label>
                 <div class="time-display">
                     <span id="current-time-display">0.00</span>s / <span id="total-time-display">0.00</span>s
                 </div>
@@ -50,68 +50,68 @@
 
             <!-- 音频控制 -->
             <div class="control-group">
-                <label>Audio:</label>
+                <label>音频:</label>
                 <label class="checkbox-label">
                     <input type="checkbox" id="enable-audio">
-                    <span>🔊 Enable Sound</span>
+                    <span>🔊 启用声音</span>
                 </label>
                 <div class="volume-control" style="margin-top: 8px;">
-                    <label>Volume:</label>
+                    <label>音量:</label>
                     <input type="range" id="volume-slider" min="0" max="100" value="30" style="width: 100%;">
                 </div>
                 <button id="sustain-pedal-btn" class="pedal-button" style="margin-top: 8px;">
-                    🎯 Sustain Pedal: OFF
+                    🎯 延音踏板: 关闭
                 </button>
             </div>
 
             <div class="control-group">
-                <label>Load JSON File:</label>
+                <label>加载JSON文件:</label>
                 <input type="file" id="file-input" accept=".json">
-                <button id="load-sample-btn">Load Sample Data</button>
+                <button id="load-sample-btn">加载示例数据</button>
             </div>
 
             <div class="control-group">
-                <label>Hand Display:</label>
+                <label>手部显示:</label>
                 <label class="checkbox-label">
                     <input type="checkbox" id="show-left-hand" checked>
                     <span class="hand-indicator left-hand"></span>
-                    Left Hand
+                    左手
                 </label>
                 <label class="checkbox-label">
                     <input type="checkbox" id="show-right-hand" checked>
                     <span class="hand-indicator right-hand"></span>
-                    Right Hand
+                    右手
                 </label>
             </div>
 
             <div class="control-group">
-                <label>Key Range:</label>
+                <label>键盘范围:</label>
                 <select id="octave-range">
-                    <option value="full">Full (88 keys)</option>
-                    <option value="treble">Treble (C4-B5)</option>
-                    <option value="bass">Bass (A2-C4)</option>
+                    <option value="full">完整 (88键)</option>
+                    <option value="treble">高音区 (C4-B5)</option>
+                    <option value="bass">低音区 (A2-C4)</option>
                 </select>
             </div>
 
             <div class="control-group">
-                <label>Zoom:</label>
+                <label>缩放:</label>
                 <input type="range" id="zoom-slider" min="50" max="300" value="100">
                 <span id="zoom-value">100%</span>
             </div>
 
             <div class="legend">
-                <h3>Legend</h3>
+                <h3>图例</h3>
                 <div class="legend-item">
                     <span class="legend-color right-hand"></span>
-                    Right Hand
+                    右手
                 </div>
                 <div class="legend-item">
                     <span class="legend-color left-hand"></span>
-                    Left Hand
+                    左手
                 </div>
                 <div class="legend-item">
                     <span class="finger-badge">1-5</span>
-                    Finger number on note
+                    音符上的指法编号
                 </div>
             </div>
         </div>
@@ -130,19 +130,19 @@
             <!-- 信息面板 -->
             <div class="info-panel">
                 <div class="info-item">
-                    <span class="info-label">Total Notes:</span>
+                    <span class="info-label">总音符数:</span>
                     <span id="total-notes">0</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Duration:</span>
+                    <span class="info-label">时长:</span>
                     <span id="total-duration">0.0s</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Pitch Range:</span>
+                    <span class="info-label">音高范围:</span>
                     <span id="pitch-range">-</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Assigned Fingerings:</span>
+                    <span class="info-label">已分配指法:</span>
                     <span id="assigned-fingerings">0</span>
                 </div>
             </div>

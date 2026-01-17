@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>Piano Vision Fingering Assignment Tool</title>
+<title>Piano Vision 指法分配工具</title>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<h1>Piano Vision Fingering Assignment Tool</h1>
-<p>Drag and drop a Piano Vision JSON file into the area below, or click to select a file.</p>
+<h1>Piano Vision 指法分配工具</h1>
+<p>将 Piano Vision JSON 文件拖放到下方区域，或点击选择文件。</p>
 
 <div class="hand-size-selection">
-    <label>Select Hand Size:</label>
+    <label>选择手的大小：</label>
     <select id="hand-size-select">
         <option value="XXS">XXS</option>
         <option value="XS">XS</option>
@@ -23,10 +23,10 @@
     </select>
 </div>
 
-<div id="drop-zone">Drag and drop Piano Vision JSON file here, or click to select</div>
+<div id="drop-zone">将 Piano Vision JSON 文件拖放到此处，或点击选择</div>
 <input type="file" id="file-input" accept=".json">
 
-<a id="download-link" href="#" download="updated_songs.json">Download Updated JSON File</a>
+<a id="download-link" href="#" download="updated_songs.json">下载更新后的 JSON 文件</a>
 
 <div id="output"></div>
 
@@ -35,64 +35,64 @@
 <div class="container">
 
     <p class="intro">
-        This web-based tool is designed to help pianists, music students, and enthusiasts optimize their piano playing by assigning efficient fingerings to musical pieces. Even if you're not familiar with <a href="https://www.pianovision.com/">Piano Vision</a>, this tool can enhance your practice and performance by providing personalized fingering suggestions based on an advanced algorithm.
+        这个基于网页的工具旨在帮助钢琴家、音乐学生和爱好者通过为音乐作品分配高效指法来优化钢琴演奏。即使您不熟悉 <a href="https://www.pianovision.com/">Piano Vision</a>，这个工具也能通过基于先进算法的个性化指法建议来提升您的练习和表演效果。
     </p>
 
-    <h2>About Piano Vision</h2>
+    <h2>关于 Piano Vision</h2>
     <p>
-        This tool is specifically designed to work with JSON files from <a href="https://www.pianovision.com/"><strong>Piano Vision</strong></a> virtual reality app for Meta Quest that offers an immersive piano learning experience.
+        该工具专门用于处理来自 <a href="https://www.pianovision.com/"><strong>Piano Vision</strong></a> 的 JSON 文件，这是一款适用于 Meta Quest 的虚拟现实应用程序，提供沉浸式的钢琴学习体验。
     </p>
 
     <img src="screenshot.jpg" width="100%" alt="" loading="lazy" />
 
-    <h2>What Does the Tool Do?</h2>
+    <h2>工具功能</h2>
     <p>
-        The Piano Fingering Assignment Tool analyzes the notes in a piano piece and assigns optimal fingerings to each note. It considers factors such as hand size, finger strength, and the physical layout of the piano keyboard to recommend fingerings that:
+        钢琴指法分配工具分析钢琴作品中的音符，并为每个音符分配最佳指法。它考虑了手的大小、手指力量和钢琴键盘的物理布局等因素，推荐能够实现以下目标的指法：
     </p>
     <ul>
-        <li><strong>Minimize Hand Movement</strong>: Reducing unnecessary shifts and stretches.</li>
-        <li><strong>Enhance Playing Comfort</strong>: Adapting to your specific hand size for a natural feel.</li>
-        <li><strong>Improve Technical Efficiency</strong>: Allowing smoother transitions between notes and chords.</li>
+        <li><strong>最小化手部移动</strong>：减少不必要的移动和伸展。</li>
+        <li><strong>提升演奏舒适度</strong>：适应您的具体手型，提供自然的手感。</li>
+        <li><strong>提高技术效率</strong>：实现音符和和弦之间更流畅的过渡。</li>
     </ul>
 
-    <h2>Key Features</h2>
+    <h2>主要功能</h2>
     <ul>
-        <li><strong>Advanced Fingering Algorithm</strong>: Utilizes sophisticated techniques inspired by professional pianists to determine the most efficient fingerings.</li>
-        <li><strong>Hand Size Customization</strong>: Offers options from extra small (XXS) to extra large (XXL) hand sizes to tailor the fingerings to your individual needs.</li>
-        <li><strong>Easy-to-Use Interface</strong>: Simple drag-and-drop functionality for uploading your music files and downloading the updated versions with fingerings included.</li>
-        <li><strong>No Installation Required</strong>: Runs entirely in your web browser, so there's no need for additional software.</li>
+        <li><strong>先进的指法算法</strong>：采用受专业钢琴家启发的复杂技术来确定最高效的指法。</li>
+        <li><strong>手型自定义</strong>：提供从特小号（XXS）到特大号（XXL）的手型选项，以满足您的个人需求。</li>
+        <li><strong>易于使用的界面</strong>：简单的拖放功能，用于上传音乐文件并下载包含指法的更新版本。</li>
+        <li><strong>无需安装</strong>：完全在您的网页浏览器中运行，无需额外软件。</li>
     </ul>
 
-    <h2>How It Works</h2>
+    <h2>使用方法</h2>
     <ol>
-        <li><strong>Upload Your Music File</strong>: Drag and drop your piano piece (in JSON format) into the tool.</li>
-        <li><strong>Select Your Hand Size</strong>: Choose from XXS to XXL to ensure the fingerings are comfortable for you.</li>
-        <li><strong>Process the File</strong>: The tool analyzes the piece using the advanced algorithm.</li>
-        <li><strong>Download the Updated File</strong>: Get your music file back with the recommended fingerings added to each note.</li>
-        <li><strong>Practice with Confidence</strong>: Use the fingered music to practice more effectively, focusing on technique and expression.</li>
+        <li><strong>上传您的音乐文件</strong>：将您的钢琴作品（JSON 格式）拖放到工具中。</li>
+        <li><strong>选择您的手型</strong>：从 XXS 到 XXL 中选择，确保指法对您来说舒适。</li>
+        <li><strong>处理文件</strong>：工具使用先进算法分析作品。</li>
+        <li><strong>下载更新后的文件</strong>：取回已为每个音符添加推荐指法的音乐文件。</li>
+        <li><strong>自信练习</strong>：使用带有指法的音乐更有效地练习，专注于技巧和表达。</li>
     </ol>
 
-    <h2>Who Can Benefit?</h2>
+    <h2>谁可以受益？</h2>
     <ul>
-        <li><strong>Pianists of All Levels</strong>: From beginners learning proper technique to advanced players refining their skills.</li>
-        <li><strong>Music Educators</strong>: Provide students with fingerings that are suited to their hand sizes and technical abilities.</li>
-        <li><strong>Self-Learners</strong>: Enhance your practice sessions by using professional fingering suggestions.</li>
+        <li><strong>各水平的钢琴演奏者</strong>：从学习正确技巧的初学者到提升技能的高级演奏者。</li>
+        <li><strong>音乐教育者</strong>：为学生提供适合他们手型和技术能力的指法。</li>
+        <li><strong>自学者</strong>：通过使用专业指法建议来提升练习效果。</li>
     </ul>
 
-    <h2>Why Proper Fingering Matters</h2>
+    <h2>为什么正确指法很重要</h2>
     <p>
-        Using the correct fingers when playing piano is crucial for several reasons:
+        在演奏钢琴时使用正确的手指至关重要，原因如下：
     </p>
     <ul>
-        <li><strong>Technical Proficiency</strong>: Proper fingering enables smoother transitions and more accurate playing.</li>
-        <li><strong>Comfort and Ergonomics</strong>: Reduces strain and the risk of injury by promoting natural hand movements.</li>
-        <li><strong>Musical Expression</strong>: Facilitates better control over dynamics and articulation, allowing for more expressive performances.</li>
+        <li><strong>技术熟练度</strong>：正确的指法可以实现更流畅的过渡和更准确的演奏。</li>
+        <li><strong>舒适度和人体工程学</strong>：通过促进自然的手部动作，减少劳损和受伤风险。</li>
+        <li><strong>音乐表达</strong>：更好地控制力度和发音，实现更具表现力的演奏。</li>
     </ul>
 
     <hr/>
 
     <p>
-        Source-Code on <a href="https://github.com/tiefenb/piano-vision-automatic-fingering-assignment">Github</a> | Based on <a href="https://github.com/marcomusy/pianoplayer">github.com/marcomusy/pianoplayer</a>
+        源代码在 <a href="https://github.com/tiefenb/piano-vision-automatic-fingering-assignment">Github</a> 上 | 基于 <a href="https://github.com/marcomusy/pianoplayer">github.com/marcomusy/pianoplayer</a>
     </p>
 </div>
 
